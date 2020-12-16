@@ -1,6 +1,8 @@
 import React from "react";
 import Axois from "axios";
 import Movie from "./Movie";
+import "./App.css";
+import Axios from "axios";
 // import PropTypes from "prop-types";
 /**
  * 
@@ -16,18 +18,6 @@ class App extends React.Component {
     //this.setState({count : this.state.count + 1});
     this.setState(current => ({count : current.count + 1})); // 이쪽이 좀더 좋은 표현
   };
-  minus = () => {
-    this.setState({count : this.state.count - 1});
-  };
-  render() {
-    return (
-      <div>
-        <h1>The number is: {this.state.count}</h1>
-        <button onClick={this.add}>Add</button>
-        <button onClick={this.minus}>Minus</button>
-      </div>
-    );
-  };
   */
  state = {
    isLoading : true,
@@ -35,37 +25,47 @@ class App extends React.Component {
  };
 
  getMovies = async () => {
-  const {data : {
-          data : {movies}
-  }
-} = await Axois.get("https://yts-proxy.nomadcoders1.now.sh/list_movies.json?sort_by=rating");
+  const {
+    data: {
+      data: { movies }
+    }
+  } = await Axios.get(
+    "https://yts-proxy.now.sh/list_movies.json?sort_by=rating"
+  );
 
   //console.log(movie.data.data.movies);
   this.setState({movies, isLoading : false});
-  console.log(movies);
  }
  componentDidMount(){
   this.getMovies();
  };
  
  render() {
-   const {isLoading , movies} = this.state;
-   return (
-     <div>
-       {isLoading ? "Loading .. " : movies.map(movie => {
-         console.log(movie);
-         return (
-         <Movie
-                key={movie.id}
-                id={movie.id}
-                year={movie.year}
-                title={movie.title}
-                summary={movie.summary}
-                poster={movie.medium_cover_image}/>
-         );
-       })}
-     </div>
-   )
+  const {isLoading , movies} = this.state;
+  return (
+    <section className="container">
+      {isLoading ? (
+        <div className="loader">
+          <span className="loader__text">Loading ...</span>
+        </div>
+      ) : (
+        <div className="movies">
+          {movies.map(movie => (
+                     <Movie
+                     key={movie.id}
+                     id={movie.id}
+                     year={movie.year}
+                     title={movie.title}
+                     summary={movie.summary.slice(0,100)}
+                     poster={movie.medium_cover_image}
+                     genres={movie.genres}
+                     />
+          ))}
+        </div>
+      )
+      }
+    </section>
+  );
  }
 }
  
